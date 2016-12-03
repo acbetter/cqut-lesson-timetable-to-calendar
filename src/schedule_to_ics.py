@@ -119,8 +119,14 @@ def main():
     print(display(ics))
     print("生成成功!")
 
-    print("\n正在保存到...")
-
+    file_name = 'output.ics'
+    print("\n正在保存到..." + file_name)
+    with open(file_name, 'wb') as f:
+        f.write(ics.to_ical())
+        if f:
+            print('保存成功!')
+        else:
+            print('保存失败!')
 
 if __name__ == '__main__':
     main()
