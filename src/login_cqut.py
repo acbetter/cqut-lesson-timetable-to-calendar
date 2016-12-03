@@ -20,9 +20,9 @@ class LoginCQUTCookie:
 
     def __init__(self):
         if self.username == '':
-            self.username = input('please enter your id: ')
+            self.username = str(input('please enter your id: '))
         if self.password == '':
-            self.password = input('please enter your password: ')
+            self.password = str(input('please enter your password: '))
 
     def login(self):
         cookie = http.cookiejar.MozillaCookieJar()  # 使用 Cookie
