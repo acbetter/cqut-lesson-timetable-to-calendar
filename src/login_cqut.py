@@ -16,7 +16,7 @@ class LoginCQUTCookie:
     login_url = 'http://i.cqut.edu.cn/zfca/login?service=http%3A%2F%2Fi.cqut.edu.cn%2Fportal.do'
     # 个人信息
     username = ''
-    password = ''
+    password = ''  # TODO: 从本地配置文件读取账号和密码
 
     def __init__(self):
         if self.username == '':

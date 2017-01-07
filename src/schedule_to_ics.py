@@ -22,7 +22,7 @@ def get_ics(schedule):
     cal = Calendar()
     cal['version'] = '2.0'
     cal['prodid'] = '-//CQUT//Syllabus//CN'  # *mandatory elements* where the prodid can be changed, see RFC 5445
-    start_monday = date(2016, 8, 29)  # 开学第一周星期一的时间
+    start_monday = date(2016, 8, 29)  # 开学第一周星期一的时间 TODO: 从 http://cale.dc.cqut.edu.cn/Index.aspx?term=2016-2017 抓取开学时间
     dict_week = {'一': 0, '二': 1, '三': 2, '四': 3, '五': 4, '六': 5, '日': 6}
     dict_day = {1: relativedelta(hours=8, minutes=20), 3: relativedelta(hours=10, minutes=20),
                 5: relativedelta(hours=14, minutes=0), 7: relativedelta(hours=16, minutes=0),
@@ -60,13 +60,15 @@ def get_ics(schedule):
 
         if line[2].find('|') == -1:
             interval = 1
+            count = int(info_week[1]) - int(info_week[0]) + 1
         else:
             interval = 2
+            count = int(info_week[1]) - int(info_week[0]) / 2 + 1
         # 如果有单双周的课 那么这些课隔一周上一次
 
         event.add('rrule',
                   {'freq': 'weekly', 'interval': interval,
-                   'count': int(info_week[1]) - int(info_week[0]) + 1})
+                   'count': count})
         # 设定重复次数
 
         event.add('location', line[3])
@@ -127,6 +129,7 @@ def main():
             print('保存成功!')
         else:
             print('保存失败!')
+
 
 if __name__ == '__main__':
     main()
