@@ -1,0 +1,482 @@
+/Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6 /Users/acbetter/Documents/cqut_student_schedule_py/get.py
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=gbk"/>
+    <meta http-equiv="Content-Language" content="zh-CN"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+    <meta content="all" name="robots"/>
+    <meta name="author" content="作者信息"/>
+    <meta name="Copyright" content="版权信息"/>
+    <meta name="description" content="站点介绍"/>
+    <meta name="keywords" content="站点关键词"/>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+    <title> 重庆理工大学信息门户</title>
+
+
+    <!-- <script language="javascript" src="http://i.cqut.edu.cn:80/zfca/js/ukeylogin.js"></script> -->
+    <script type='text/javascript' src='dwr/interface/UsermanAjax.js'></script>
+    <script type='text/javascript' src='dwr/engine.js'></script>
+    <script type='text/javascript' src='dwr/util.js'></script>
+    <script language="javascript" src="js/BatAjax.js"></script>
+
+    <link rel="stylesheet" href="http://i.cqut.edu.cn:80/zfca/login/css/module.css"
+          type="text/css" media="all"/>
+    <link rel="stylesheet" href="http://i.cqut.edu.cn:80/zfca/login/css/public.css"
+          type="text/css" media="all"/>
+
+    <!--[if IE 6]>
+    <script src="../js/ie6comm.js"></script>
+    <script>
+        DD_belatedPNG.fix('img');
+    </script>
+    <![endif]-->
+</head>
+<body class="login_bg">
+<div id="container" class="login_main">
+    <div class="login_logo">
+        <h2>
+            <a href="#"><img src="http://i.cqut.edu.cn:80/zfca/login/logo/logo_school.png"/>
+            </a>
+        </h2>
+        <h3>
+            <a href="#"><img src="http://i.cqut.edu.cn:80/zfca/login/logo/logo_rz.png"/>
+            </a>
+        </h3>
+    </div>
+    <div class="login_left">
+        <img class="login_pic" src="http://i.cqut.edu.cn:80/zfca/login/logo/login_pic.png"/>
+    </div>
+    <form id="fm1" name="fm1" class="fm-v clearfix"
+          action="/zfca/login;jsessionid=F4BD84C69D8288815D3EB3F8DB85B9F5?service=http%3A%2F%2Fi.cqut.edu.cn%2Fportal.do"
+          method="post" onsubmit="return CheckForm();">
+        <input type="hidden" id="useValidateCode" name="useValidateCode"
+               value="0"/>
+        <input type="hidden" id="isremenberme" name="isremenberme"
+               value="0"/>
+        <input type="hidden" id="ip" name="ip" value=""/>
+        <div class="login_right">
+            <div class="login" id="thetable">
+
+                <div class="hide" id="msg"></div>
+                <div class="user">
+                    <label for="">
+                        用户名：
+                    </label>
+
+
+                    <input id="username" name="username" class="text_nor" style="width:170px;" tabindex="1"
+                           onkeypress="if(event.keyCode==13||event.keyCode==9){document.getElementById('password').focus(); return false;}"
+                           onfocus="hideMsg();" accesskey="n" type="text" value="" autocomplete="false"/>
+
+                    <div id="msg_div" class="hide">
+                        <div class="prompcon">
+                            <p>
+                                请输入用户名
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="passw">
+                    <label for="">
+                        密&nbsp;&nbsp;&nbsp;码：
+                    </label>
+                    <input id="password" name="password" class="text_nor" style="width:170px;" tabindex="2"
+                           onkeypress="if(document.getElementById('useValidateCode').value == '1'){if(event.keyCode==13||event.keyCode==9){document.getElementById('j_captcha_response').focus();return false;}}"
+                           onkeyup="pwStrength(this.value);" onfocus="hideMsgOne();" accesskey="p" type="password"
+                           value="" autocomplete="off"/>
+                    <div id="msg_div1" class="hide">
+                        <div class="prompcon">
+                            <p>
+                                请输入密码
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="yzm" id="yzm" style="display:none;">
+                    <label for="">
+                        验证码：
+                    </label>
+                    <input type="text" id="j_captcha_response"
+                           name="j_captcha_response" size="10" tabindex="3"
+                           style="width: 60px"/>
+                    <img src="captcha.htm" id="captchaimg" width="50px"
+                         height="20px;"/>
+                    <a href="#"
+                       onclick="document.getElementById('captchaimg').src='captcha.htm?random='+Math.random();return false">看不清<br/>换一张</a>
+
+                </div>
+                <div class="sxsj" style="display: none">
+                    <label for="">
+                        失效时间：
+                    </label>
+                    <input id="losetime" name="losetime" tabindex="4" type="text" value=""/>
+                    分钟
+                </div>
+                <div class="login_notice" id="jzw" style="display:none">
+                    <p style="padding-left: 70px">
+                        <input type="checkbox" name="rememberMe" id="rememberMe"
+                               value="true" tabindex="5"/>
+                        两周内不用再登录
+                    </p>
+                </div>
+                <div class="login_notice" style="display:none">
+                    <p style="padding-left: 70px">
+                        <input type="checkbox" name="rememberUser" id="rememberUser"
+                               value="true" tabindex="5"/>
+                        记住我的用户名
+                    </p>
+                </div>
+                <div class="btn" style="width:100%; height:30px;">
+                        	<span style="float:left">
+							<input type="hidden" name="lt"
+                                   value="_cDAA5B5CF-CF6B-86B9-83FA-F04353A9E6B3_k2C1E565B-704A-DD5D-0FC0-8DA784978B90"/>
+							<input type="hidden" name="_eventId" value="submit"/>
+							<input class="btn_dl" name="submit1" type="submit" value=" "
+                                   accesskey="l" tabindex="6" class="button_dl"/>
+                            </span>
+                    <span style="float:left">
+							<!-- <a href="######" onclick="DoJFSignature()" style=" font-weight:bold" >&nbsp;U-KEY登录</a> -->
+							<br/>
+							<a
+                                    href="/zfca/securitycenter/findpwd/recoverpasswd.jsp;jsessionid=F4BD84C69D8288815D3EB3F8DB85B9F5">&nbsp;忘记密码？&nbsp;</a>
+                        <!-- <OBJECT classid=clsid:127698e4-e730-4e5c-a2b1-21490a70c8a1 codebase="xenrlinf.cab" id="XEnroll" VIEWASTEXT></OBJECT>
+                        <OBJECT id="zflog" name="zflog" classid="clsid:426FD9E1-5A3F-497F-87B0-749917615D0F" codebase="zflog.cab" width=0 height=0></OBJECT> -->
+                            </span>
+                </div>
+                <div id="ipAddr" class="" style="padding-top: 15px !important;">
+                    <p>
+                        若防护级别高，则要允许与ActiveX控件的交互
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="login_copyright">
+				<span>&copy;2013 <a href="http://www.cqut.edu.cn"
+                                    target="_blank">重庆理工大学</a> <span>版权所有</span>&nbsp;&nbsp;技术支持：信息中心 <span
+                        style="color:red">联系电话：62563262&nbsp;(花溪校区)&nbsp;&nbsp;&nbsp;&nbsp;62565005&nbsp;(两江校区)</span></span><a
+                class="ver" href="#">Ver 3.1.4</a>
+        </div>
+        <style>
+            .bottom {
+                text-align: center;
+                color: #60819d;
+                height: auto;
+                font-size: 16px;
+                font-weight: bolder
+            }
+
+            .bottom img {
+                border: none;
+                height: 150px;
+                widrh: 150px;
+            }
+
+            .bottom a {
+                text-decoration: none;
+                color: #ff0000;
+                font-weight: bolder
+            }
+        </style>
+        <div class="bottom">
+            <a href="http://app.cqut.edu.cn" target="_blank" title="知行理工APP"><img
+                    src="http://i.cqut.edu.cn:80/zfca/images/ewm.png"/></a><br/>
+            <a href="http://app.cqut.edu.cn" target="_blank" title="知行理工APP"><span>知行理工APP下载</span></a>
+        </div>
+    </form>
+    <script type="text/javascript">
+        window.onload = function () {
+            if ("" >= 3) {
+                document.getElementById("yzm").style.display = "";
+            } else {
+                if (document.getElementById("useValidateCode").value == "1") {
+                    document.getElementById("yzm").style.display = "";
+                } else {
+                    document.getElementById("yzm").style.display = "none";
+                    document.getElementById("j_captcha_response").disabled = true;
+                }
+            }
+            if ("" != null && "" == "true" && "" != "") {
+                showErrMsg("");
+            }
+
+            if ("" != null && "" != "") {
+                showErrMsg("");
+            }
+
+            if ("" != null && "" != "") {
+                showErrMsg("");
+            }
+
+            if ("" != null && "" != "") {
+                showErrMsg("");
+            }
+
+            if ("" != null && "" != "") {
+                showErrMsg("");
+            }
+            if ("" != null && "" != "") {
+                showErrMsg("");
+            }
+            /*
+             var exception = getQueryString("exception");
+             if(exception != null && exception=="close"){
+             showErrMsg("程序异常，请关闭浏览器，重新登录。");
+             }
+             */
+            this.getIP();
+            document.getElementById('losetime').value = "30";
+            document.getElementById('username').focus();
+            if (document.getElementById("isremenberme").value == "1") {
+                document.getElementById("jzw").style.display = "";
+            } else {
+                document.getElementById("jzw").style.display = "none";
+            }
+            /*
+             var rememberUser = getCookie("rememberUser");
+             if(null != rememberUser && rememberUser != ""){
+             //alert("Cookie>>>>>>>>>>"+getCookie("rememberUser"));
+             document.getElementById("rememberUser").checked = true;
+             document.getElementById('username').value=rememberUser;
+             document.getElementById('password').focus();
+             }
+             */
+        }
+
+        function hideMsg() {
+            var msgdivv = document.getElementById("msg_div");
+            msgdivv.className = "hide";
+        }
+
+        function hideMsgOne() {
+            var msg_div1 = document.getElementById("msg_div1");
+            msg_div1.className = "hide";
+        }
+        function CheckForm() {
+            var username = document.getElementById("username");
+            var password = document.getElementById("password");
+            if (username.value == "") {
+                var msgdivv = document.getElementById("msg_div");
+                msgdivv.className = "login_error";
+                return false;
+            }
+            if (password.value == "") {
+                var msg_div1 = document.getElementById("msg_div1");
+                msg_div1.className = "login_error";
+                return false;
+            }
+            if (strong) {
+            } else {
+                //弱密码监测，首先进行Ajax验证
+                UsermanAjax.checkAccount(username.value, password.value, function (msg) {
+                    var msgs = msg.split("#");
+                    if (msgs[1] == "ok") {
+                        var service = getQueryString("service");
+                        var qstr = "username=" + username.value + "&password=" + password.value;
+                        if (service != null && service != "") {
+                            qstr += "&service=" + service;
+                        }
+                        window.location.href = "/zfca/login/zfcaStrong.jsp?" + escape(qstr);
+                    } else {
+                        if (msgs[0] >= 3) {
+                            document.getElementById("yzm").style.display = "";
+                            document.getElementById("j_captcha_response").disabled = false;
+                        } else {
+                            if (document.getElementById("useValidateCode").value == "1") {
+                                document.getElementById("yzm").style.display = "";
+                            } else {
+                                document.getElementById("yzm").style.display = "none";
+                                document.getElementById("j_captcha_response").disabled = true;
+                            }
+                        }
+                        showErrMsg(msgs[1]);
+                        return false;
+                    }
+                });
+                return false;
+            }
+            /*
+             //登录保护监测，首先进行Ajax验证
+             UsermanAjax.checkAccount(username.value,password.value,function(msg){
+             if(msg == "ok"){
+             UsermanAjax.checkRetakepw(username.value,password.value,function(msg2){
+             if(msg2 == "no"){  //调整到安全中心
+             var qstr = "username="+username.value+"&password="+password.value;
+             alert("由于您未设置任何登录保护，请在安全中心进行设置！");
+             window.location.href = "remoteLogin?"+qstr+"&issubmit=true&service=main.do";
+             return false;
+             }
+             });
+             }else{
+             showErrMsg(msg);
+             return false;
+             }
+             });
+             //设置记住用户开关
+             if(document.getElementById("rememberUser").checked == true){
+             SetCookie("rememberUser", username.value);
+             }else{
+             delCookie("rememberUser");
+             }
+             */
+            return true;
+        }
+
+        function showErrMsg(msg) {
+            var msgdiv = document.getElementById("msg");
+            var status = document.getElementById("status");
+            if (status != null) {
+                status.style.display = "none";
+            }
+            msgdiv.innerText = msg;
+
+            msgdiv.className = "prompt_dl";
+        }
+        function hideMMshow() {
+            var msgdiv = document.getElementById("msg");
+            var status = document.getElementById("status");
+            if (status != null) {
+                status.style.display = "none";
+                msgdiv.innerText = "";
+            }
+            msgdiv.className = "hide";
+        }
+        function DoJFSignature() {
+            var str = fm1.zflog.GetPin();
+            if (str == null || str == "") {
+                alert("请插入U-KEY");
+            } else {
+                UsermanAjax.getTysfyhb(str, function (tysfyhb) {
+                    if (tysfyhb.yhm != null) {
+                        document.getElementById('thetable').style.display = "none";
+                        document.getElementById('username').value = tysfyhb.yhm;
+                        document.getElementById('password').value = tysfyhb.kl;
+                        fm1.submit();
+                    } else {
+                        alert("验证失败！");
+                        return false;
+                    }
+                });
+            }
+        }
+
+        function getIP() {
+            try {
+                var obj = new ActiveXObject("rcbdyctl.Setting");
+                var ip = obj.GetIPAddress;
+
+            } catch (e) {
+            }
+
+            if (ip != null) {
+                document.getElementById("ip").value = ip;
+                document.getElementById("ipAddr").style.display = "none";
+            } else {
+                document.getElementById("ipAddr").style.display = "";
+            }
+
+        }
+
+        //CharMode函数
+        //测试某个字符是属于哪一类.
+        var strong = true;
+        function CharMode(iN) {
+            if (iN >= 48 && iN <= 57) //数字
+                return 1;
+            if (iN >= 65 && iN <= 90) //大写字母
+                return 2;
+            if (iN >= 97 && iN <= 122)  //小写 字母
+                return 4;
+            else
+                return 8; //特殊字符
+        }
+
+        //bitTotal函数
+        //计算出当前密码当中一共有多少种模式
+
+        function bitTotal(num) {
+            var modes = 0;
+            for (var i = 0; i < 4; i++) {
+                if (num & 1) modes++;
+                num >>>= 1;
+            }
+            return modes;
+        }
+
+
+        //checkStrong函数
+        //返回密码的强度级别
+
+        function checkStrong(sPW) {
+            if (sPW.length < 6)
+                return 0; //密码太短
+            var Modes = 0;
+            for (i = 0; i < sPW.length; i++) {
+                //测试每一个字符的类别并统计一共有多少种模式.
+                Modes |= CharMode(sPW.charCodeAt(i));
+            }
+            return bitTotal(Modes);
+        }
+
+        //pwStrength函数
+        //当用户放开键盘或密码输入框失去焦点时,根据不同的级别显示提示
+
+        function pwStrength(pwd) {
+            if (pwd == null || pwd == '') {
+                hideMMshow();
+            }
+            else {
+                S_level = checkStrong(pwd);
+                switch (S_level) {
+                    case 0:
+                        showErrMsg("密码太短,请及时修改!");
+                        strong = false;
+                        break;
+                    case 1:
+                        showErrMsg("密码强度太弱,请及时修改!");
+                        strong = false;
+                        break;
+                    default:
+                        strong = true;
+                        hideMMshow();
+                }
+            }
+        }
+
+        //Cookie记住用户名
+        function SetCookie(name, value) {
+            var Days = 30; //此 cookie 将被保存 30 天
+            var exp = new Date(); //
+            new Date("December 31, 9998");
+            exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+            document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+        }
+
+        //读取cookies函数
+        function getCookie(name) {
+            var arr = document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
+            if (arr != null) return unescape(arr[2]);
+            return null;
+        }
+
+        //删除cookie
+        function delCookie(name) {
+            var exp = new Date();
+            exp.setTime(exp.getTime() - 1);
+            var cval = getCookie(name);
+            if (cval != null) document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+        }
+
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+    </script>
+</div>
+</body>
+</html>
+
