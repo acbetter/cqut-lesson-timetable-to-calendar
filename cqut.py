@@ -9,7 +9,7 @@
 __title__ = 'class-schedule2ics for cqut'
 __description__ = 'Spider Class Schedule of CQUT and Save to iCalendar file for Calendar App.'
 __url__ = 'https://acbetter.com'
-__version__ = '0.1'
+__version__ = '0.2'
 __author__ = 'AC Better'
 __author_email__ = 'acbetter@foxmail.com'
 __license__ = 'GPL-3.0'
@@ -96,7 +96,7 @@ class CssGetter(object):
     def user_login(self):
         """模拟登录数字化校园"""
         r = self.session.get('http://ip.cn')
-        soup = BeautifulSoup(r.text, 'html5lib')
+        soup = BeautifulSoup(r.text, 'html.parser')
         self.logger.debug(r.text.replace('\n', ''))
         self.logger.debug(' '.join(re.split('[	 \n]+', soup.text)).strip())
         self.logger.info('正在准备登录数字化校园...')
@@ -116,7 +116,7 @@ class CssGetter(object):
                     '_eventId': 'submit',
                     'submit1': ''}
             r = self.session.post(url=CssGetter.URL['login'], data=data)
-            soup = BeautifulSoup(r.text, 'html5lib')
+            soup = BeautifulSoup(r.text, 'html.parser')
             self.logger.info('正在获取用户信息...')
             name = soup.select('div > em')[0].text
             self.logger.info('登录成功！' + name)
@@ -129,7 +129,7 @@ class CssGetter(object):
         """爬取课程表信息"""
         self.logger.info('正在准备爬取课程表信息...')
         r = self.session.get(url=CssGetter.URL['schedule'])
-        soup = BeautifulSoup(r.text, 'html5lib')
+        soup = BeautifulSoup(r.text, 'html.parser')
         self.logger.debug(' '.join(re.split('[	 \n]+', soup.text)).strip())
         i = soup.find_all('td', {'align': 'Center', 'rowspan': re.compile('\d+')})
         """
@@ -155,28 +155,31 @@ class CssGetter(object):
         """
         j = []
         for x in i:
-            j.extend(re.sub(r'<td(.*?)>', r'', x).replace('</td>', '').split('<br/><br/>'))
+            j.extend(re.sub(r'<td(.*?)>', r'', str(x)).replace('</td>', '').split('<br/><br/>'))
         for x in j:
-            this = {
-                '课程名': re.sub(r'【(.*?)】', r'', x.split('<br/>')[0]),
-                '星期几': re.findall(r'周(.?)第', x)[0],
-                '第几节': re.findall(r'第(.?)', x)[0],
-                '起始周': re.findall(r'{第(.*?)周', x)[0].split('-')[0],
-                '结课周': re.findall(r'{第(.*?)周', x)[0].split('-')[1],
-                '单周?': True if '单' in x.split('<br/>')[1] else False,
-                '双周?': True if '双' in x.split('<br/>')[1] else False,
-                '教师名': re.sub(r'\((.*?)\)', r'', x.split('<br/>')[2]),
-                '教室': x.split('<br/>')[3]
-            }
-            self.logger.info(this)
-            self.schedule.extend([this])
-            '''拆课 - 我们对连续的两节大课进行拆分'''
-            t = re.findall(r'第(.*?)节', x)[0].split(',')
-            if len(t) > 2:
-                that = dict(this)
-                that['第几节'] = t[2]
-                self.logger.warning(that)
-                self.schedule.extend([that])
+            try:
+                this = {
+                    '课程名': re.sub(r'【(.*?)】', r'', x.split('<br/>')[0]),
+                    '星期几': re.findall(r'周(.?)第', x)[0],
+                    '第几节': re.findall(r'第(.?)', x)[0],
+                    '起始周': re.findall(r'{第(.*?)周', x)[0].split('-')[0],
+                    '结课周': re.findall(r'{第(.*?)周', x)[0].split('-')[1],
+                    '单周?': True if '单' in x.split('<br/>')[1] else False,
+                    '双周?': True if '双' in x.split('<br/>')[1] else False,
+                    '教师名': re.sub(r'\((.*?)\)', r'', x.split('<br/>')[2]),
+                    '教室': x.split('<br/>')[3]
+                }
+                self.logger.info(this)
+                self.schedule.extend([this])
+                '''拆课 - 我们对连续的两节大课进行拆分'''
+                t = re.findall(r'第(.*?)节', x)[0].split(',')
+                if len(t) > 2:
+                    that = dict(this)
+                    that['第几节'] = t[2]
+                    self.logger.warning(that)
+                    self.schedule.extend([that])
+            except IndexError:
+                self.logger.warning(x)
 
     def get_date_start(self):
         pass
@@ -186,7 +189,8 @@ class CssGetter(object):
         cal = Calendar()
         cal['version'] = '2.0'
         cal['prodid'] = '-//CQUT//Syllabus//CN'  # *mandatory elements* where the prodid can be changed, see RFC 5445
-        self.date_start = date(2017, 8, 28)  # 开学第一周星期一的时间
+        self.date_start = date(2018, 2, 26)  # 开学第一周星期一的时间
+        self.logger.info('开学第一周星期一的时间为：' + str(self.date_start))
         # datetime.now()
         # TODO: 从 http://cale.dc.cqut.edu.cn/Index.aspx?term=201x-201x 抓取开学时间
         dict_week = {'一': 0, '二': 1, '三': 2, '四': 3, '五': 4, '六': 5, '日': 6}
@@ -194,9 +198,9 @@ class CssGetter(object):
         #              5: relativedelta(hours=14, minutes=0), 7: relativedelta(hours=16, minutes=0),
         #              9: relativedelta(hours=19, minutes=0)}
         dict_time = {1: time(8, 20), 3: time(10, 20), 5: time(14, 0), 7: time(16, 0), 9: time(19, 0)}
-
+        self.logger.info('正在导出日程文件......')
         for i in self.schedule:
-            print(i)
+            # print(i)
             event = Event()
             ev_start_date = self.date_start + relativedelta(weeks=int(i['起始周']) - 1, weekday=dict_week[i['星期几']])
             ev_start_datetime = datetime.combine(ev_start_date, dict_time[int(i['第几节'])])  # 上课时间
@@ -219,11 +223,12 @@ class CssGetter(object):
             cal.add_component(event)
         with open('output.ics', 'w+', encoding='utf-8') as file:
             file.write(cal.to_ical().decode('utf-8'.replace('\r\n', '\n').strip()))
+        self.logger.info('导出成功！')
 
 
 if __name__ == '__main__':
     cg = CssGetter()
-    cg.get_username_password()
+    cg.get_username_password()1
     cg.user_login()
     # cg.get_date_start()
     cg.get_schedule()
