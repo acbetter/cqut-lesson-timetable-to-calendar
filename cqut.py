@@ -228,7 +228,7 @@ class CssGetter(object):
 
 if __name__ == '__main__':
     cg = CssGetter()
-    cg.get_username_password()1
+    cg.get_username_password()
     cg.user_login()
     # cg.get_date_start()
     cg.get_schedule()
