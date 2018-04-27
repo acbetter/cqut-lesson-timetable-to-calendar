@@ -1,7 +1,8 @@
-# cqut-student-schedule-to-ics
+# CQUT Student Schedule To ICS
+
 将重庆理工大学教务网课程导出为 iCalendar 文件（可用于 iCal、Google Calendar 等）
 
-# INSTALLATION
+## INSTALLATION
 
 You need to install python 3 first.
 
@@ -16,27 +17,26 @@ pip install beautifulsoup4
 pip install icalendar
 ```
 
-# USAGE
+## USAGE
 
-```Shell
+```shell
 cqut.py -u <username> -p <password>
 ```
 
-# DESCRIPTION
+## DESCRIPTION
 
 ```shell
 -u, --username    你的学号
 -p, --password    你的密码
 ```
 
-# TODO
-1. 从本地配置文件读取账号和密码
+## TODO
 
-2. 从 http://cale.dc.cqut.edu.cn/Index.aspx?term=201x-201x 抓取开学时间
+- [ ] 从本地配置文件读取账号和密码
+- [ ] 从 http://cale.dc.cqut.edu.cn/Index.aspx?term=201x-201x 抓取开学时间
+- [ ] 部署到 GAE
 
-3. 部署到 GAE
-
-# COPYRIGHT 
+# LICENSE 
 
 GPL-3.0
 
