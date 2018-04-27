@@ -2,6 +2,8 @@
 
 将重庆理工大学教务网课程导出为 iCalendar 文件（可用于 iCal、Google Calendar 等）
 
+![demo](https://i.loli.net/2018/04/27/5ae2e14a9deea.png)
+
 ## INSTALLATION
 
 You need to install python 3 first.
