@@ -1,26 +1,3 @@
-#  -*- coding: utf-8 -*-
-
-#            __     __     __   _____  _____   __    ___
-#    /\     /      |  )   |       |      |    |     |   \
-#   /__\   |       |--    |--     |      |    |--   |___/
-#  /    \   \__)   |__)   |__     |      |    |__   |   \_
-
-
-__title__ = 'class-schedule2ics for cqut'
-__description__ = 'Spider Class Schedule of CQUT and Save to iCalendar file for Calendar App.'
-__url__ = 'https://acbetter.com'
-__version__ = '0.2'
-__author__ = 'AC Better'
-__author_email__ = 'acbetter@foxmail.com'
-__license__ = 'GPL-3.0'
-__copyright__ = 'Copyright 2017 AC Better'
-
-"""
-class-schedule2ics
-~~~~~~~~~~~~~~~~~~~~~
-
-
-"""
 import os
 import re
 import sys
@@ -36,7 +13,7 @@ from bs4 import BeautifulSoup
 from icalendar import Calendar, Event
 
 
-class CssGetter(object):
+class CqutIcsExporter(object):
     Headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) '
                              'AppleWebKit/537.36 (KHTML, like Gecko) '
                              'Chrome/55.0.2883.95 Safari/537.36'}
@@ -59,7 +36,7 @@ class CssGetter(object):
     @staticmethod
     def logger_creator():
         """脚本日志处理"""
-        logger_ = logging.getLogger('cqut.py')
+        logger_ = logging.getLogger('cqut2ics.py')
         logger_.setLevel(logging.DEBUG)
 
         file_handler = logging.FileHandler('cqut.log', 'w', 'utf-8')
@@ -81,7 +58,7 @@ class CssGetter(object):
             opts, args = getopt.getopt(self.argv[1:], 'hu:p:', ['username=', 'password='])
         except getopt.GetoptError:
             self.logger.info('你的打开方式不对！请重新输入命令')
-            self.logger.info('cqut.py -u <username> -p <password>')
+            self.logger.info('cqut2ics.py -u <username> -p <password>')
             sys.exit(-1)
         for opt, arg in opts:
             if opt in ('-u', '--username'):
@@ -102,8 +79,8 @@ class CssGetter(object):
         self.logger.info('正在准备登录数字化校园...')
         try:
             self.logger.info('正在尝试打开数字化校园...')
-            self.session.headers = CssGetter.Headers
-            r = self.session.get(url=CssGetter.URL['login'])
+            self.session.headers = CqutIcsExporter.Headers
+            r = self.session.get(url=CqutIcsExporter.URL['login'])
             value_lt = re.findall(r'name="lt" value="(.*?)"', r.text)[0]
             self.lt = value_lt
             data = {'useValidateCode': '0',
@@ -115,7 +92,7 @@ class CssGetter(object):
                     'lt': value_lt,
                     '_eventId': 'submit',
                     'submit1': ''}
-            r = self.session.post(url=CssGetter.URL['login'], data=data)
+            r = self.session.post(url=CqutIcsExporter.URL['login'], data=data)
             soup = BeautifulSoup(r.text, 'html.parser')
             self.logger.info('正在获取用户信息...')
             name = soup.select('div > em')[0].text
@@ -128,7 +105,7 @@ class CssGetter(object):
     def get_schedule(self):
         """爬取课程表信息"""
         self.logger.info('正在准备爬取课程表信息...')
-        r = self.session.get(url=CssGetter.URL['schedule'])
+        r = self.session.get(url=CqutIcsExporter.URL['schedule'])
         soup = BeautifulSoup(r.text, 'html.parser')
         self.logger.debug(' '.join(re.split('[	 \n]+', soup.text)).strip())
         i = soup.find_all('td', {'align': 'Center', 'rowspan': re.compile('\d+')})
@@ -227,7 +204,7 @@ class CssGetter(object):
 
 
 if __name__ == '__main__':
-    cg = CssGetter()
+    cg = CqutIcsExporter()
     cg.get_username_password()
     cg.user_login()
     # cg.get_date_start()
