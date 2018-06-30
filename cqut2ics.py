@@ -1,86 +1,71 @@
 import os
 import re
 import sys
-import getopt
 import logging
+import argparse
 from uuid import uuid1
-from pprint import pprint
-from dateutil.relativedelta import relativedelta
-from datetime import date, datetime, time, timedelta, timezone
-
+from datetime import date, datetime, time
 import requests
 from bs4 import BeautifulSoup
 from icalendar import Calendar, Event
+from dateutil.relativedelta import relativedelta
 
 
-class CqutIcsExporter(object):
-    Headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) '
+class CqutIcsExporter:
+    headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) '
                              'AppleWebKit/537.36 (KHTML, like Gecko) '
                              'Chrome/55.0.2883.95 Safari/537.36'}
-    URL = {
-        'login': 'http://i.cqut.edu.cn/zfca/login?service=http%3A%2F%2Fi.cqut.edu.cn%2Fportal.do',
-        'schedule': 'http://i.cqut.edu.cn/zfca?yhlx=student&login=0122579031373493728&url=xskbcx.aspx'
-    }
+    url = {'login': 'http://i.cqut.edu.cn/zfca/login?service=http%3A%2F%2Fi.cqut.edu.cn%2Fportal.do',
+           'schedule': 'http://i.cqut.edu.cn/zfca?yhlx=student&login=0122579031373493728&url=xskbcx.aspx'}
 
-    def __init__(self):
-        self.argv = sys.argv
-        os.chdir(str(self.argv[0]).rsplit('/', maxsplit=1)[0])
-        self.logger = self.logger_creator()
+    def __init__(self, username=None, password=None, url=url, headers=headers, with_log=False, with_debug=False):
+        # logging. = logging._creator()
+        # todo 继承全局日志处理
+        # todo 在debug模式下 不在控制台显示日志 此时创建文件 脚本运行结束时 提醒用户路径
 
-        self.username, self.password = '', ''
+        self.url = url
+        self.headers = headers
+        self.username = username
+        self.password = password
+        self.with_log = with_log
+        self.with_debug = with_debug
+
         self.session = requests.Session()
         self.lt = None
         self.schedule = []
         self.date_start = None
 
-    @staticmethod
-    def logger_creator():
+    def logger_creator(self):
         """脚本日志处理"""
-        logger_ = logging.getLogger('cqut2ics.py')
+        logger_ = logging.getLogger('cqut2ics')
         logger_.setLevel(logging.DEBUG)
 
-        file_handler = logging.FileHandler('cqut.log', 'w', 'utf-8')
-        file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s'))
-        logger_.addHandler(file_handler)
+        if self.with_debug:
+            file_handler = logging.FileHandler('cqut.log', 'w', 'utf-8')
+            file_handler.setLevel(logging.DEBUG)
+            file_handler.setFormatter(logging.Formatter('%(asctime)s %(name)-8s %(levelname)-8s %(message)s'))
+            logger_.addHandler(file_handler)
 
         console_handler = logging.StreamHandler()
         console_handler.setLevel(logging.INFO)
-        console_handler.setFormatter(logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s'))
+        console_handler.setFormatter(logging.Formatter('%(name)-8s: %(levelname)-8s %(message)s'))
         logger_.addHandler(console_handler)
 
         logger_.info('正在执行脚本...')
         return logger_
 
-    def get_username_password(self):
-        """解析命令行参数 得到用户名和密码"""
-        try:
-            opts, args = getopt.getopt(self.argv[1:], 'hu:p:', ['username=', 'password='])
-        except getopt.GetoptError:
-            self.logger.info('你的打开方式不对！请重新输入命令')
-            self.logger.info('cqut2ics.py -u <username> -p <password>')
-            sys.exit(-1)
-        for opt, arg in opts:
-            if opt in ('-u', '--username'):
-                self.username = arg
-            elif opt in ('-p', '--password'):
-                self.password = arg
-        if self.username is None:
-            self.username = input('请输入你的学号: ')
-        if self.password is None:
-            self.password = input('请输入你的密码: ')
 
     def user_login(self):
         """模拟登录数字化校园"""
         r = self.session.get('http://ip.cn')
         soup = BeautifulSoup(r.text, 'html.parser')
-        self.logger.debug(r.text.replace('\n', ''))
-        self.logger.debug(' '.join(re.split('[	 \n]+', soup.text)).strip())
-        self.logger.info('正在准备登录数字化校园...')
+        logging.debug(r.text.replace('\n', ''))
+        logging.debug(' '.join(re.split('[	 \n]+', soup.text)).strip())
+        logging.info('正在准备登录数字化校园...')
         try:
-            self.logger.info('正在尝试打开数字化校园...')
-            self.session.headers = CqutIcsExporter.Headers
-            r = self.session.get(url=CqutIcsExporter.URL['login'])
+            logging.info('正在尝试打开数字化校园...')
+            self.session.headers = CqutIcsExporter.headers
+            r = self.session.get(url=CqutIcsExporter.url['login'])
             value_lt = re.findall(r'name="lt" value="(.*?)"', r.text)[0]
             self.lt = value_lt
             data = {'useValidateCode': '0',
@@ -92,22 +77,23 @@ class CqutIcsExporter(object):
                     'lt': value_lt,
                     '_eventId': 'submit',
                     'submit1': ''}
-            r = self.session.post(url=CqutIcsExporter.URL['login'], data=data)
+            r = self.session.post(url=CqutIcsExporter.url['login'], data=data)
             soup = BeautifulSoup(r.text, 'html.parser')
-            self.logger.info('正在获取用户信息...')
+            logging.info('正在获取用户信息...')
             name = soup.select('div > em')[0].text
-            self.logger.info('登录成功！' + name)
+            logging.info('登录成功！' + name)
         except IndexError:
-            self.logger.error('登录失败！请检查账号密码是否有误，网络连接及代理配置是否正常。')
-            self.logger.debug('下面是登录页信息:')
-            self.logger.debug(r.text.replace('\n', ''))
+            logging.error('登录失败！请检查账号密码是否有误，网络连接及代理配置是否正常。')
+            logging.debug('下面是登录页信息:')
+            logging.debug(r.text.replace('\n', ''))
+            sys.exit(404)
 
     def get_schedule(self):
         """爬取课程表信息"""
-        self.logger.info('正在准备爬取课程表信息...')
-        r = self.session.get(url=CqutIcsExporter.URL['schedule'])
+        logging.info('正在准备爬取课程表信息...')
+        r = self.session.get(url=CqutIcsExporter.url['schedule'])
         soup = BeautifulSoup(r.text, 'html.parser')
-        self.logger.debug(' '.join(re.split('[	 \n]+', soup.text)).strip())
+        logging.debug(' '.join(re.split('[	 \n]+', soup.text)).strip())
         i = soup.find_all('td', {'align': 'Center', 'rowspan': re.compile('\d+')})
         """
         i = [
@@ -146,28 +132,28 @@ class CqutIcsExporter(object):
                     '教师名': re.sub(r'\((.*?)\)', r'', x.split('<br/>')[2]),
                     '教室': x.split('<br/>')[3]
                 }
-                self.logger.info(this)
+                logging.info(this)
                 self.schedule.extend([this])
                 '''拆课 - 我们对连续的两节大课进行拆分'''
                 t = re.findall(r'第(.*?)节', x)[0].split(',')
                 if len(t) > 2:
                     that = dict(this)
                     that['第几节'] = t[2]
-                    self.logger.warning(that)
+                    logging.warning(that)
                     self.schedule.extend([that])
             except IndexError:
-                self.logger.warning(x)
+                logging.warning(x)
 
     def get_date_start(self):
         pass
 
     def to_ics(self):
-        self.logger.warning('拆分后的课程总数：' + str(len(self.schedule)))
+        logging.warning('拆分后的课程总数：' + str(len(self.schedule)))
         cal = Calendar()
         cal['version'] = '2.0'
         cal['prodid'] = '-//CQUT//Syllabus//CN'  # *mandatory elements* where the prodid can be changed, see RFC 5445
         self.date_start = date(2018, 2, 26)  # 开学第一周星期一的时间
-        self.logger.info('开学第一周星期一的时间为：' + str(self.date_start))
+        logging.info('开学第一周星期一的时间为：' + str(self.date_start))
         # datetime.now()
         # TODO: 从 http://cale.dc.cqut.edu.cn/Index.aspx?term=201x-201x 抓取开学时间
         dict_week = {'一': 0, '二': 1, '三': 2, '四': 3, '五': 4, '六': 5, '日': 6}
@@ -175,7 +161,7 @@ class CqutIcsExporter(object):
         #              5: relativedelta(hours=14, minutes=0), 7: relativedelta(hours=16, minutes=0),
         #              9: relativedelta(hours=19, minutes=0)}
         dict_time = {1: time(8, 20), 3: time(10, 20), 5: time(14, 0), 7: time(16, 0), 9: time(19, 0)}
-        self.logger.info('正在导出日程文件......')
+        logging.info('正在导出日程文件......')
         for i in self.schedule:
             # print(i)
             event = Event()
@@ -200,13 +186,26 @@ class CqutIcsExporter(object):
             cal.add_component(event)
         with open('output.ics', 'w+', encoding='utf-8') as file:
             file.write(cal.to_ical().decode('utf-8'.replace('\r\n', '\n').strip()))
-        self.logger.info('导出成功！')
+        logging.info('导出成功！')
+
+
+def parse_args():
+    """解析命令行参数"""
+    parser = argparse.ArgumentParser(description='Export your lesson timetable to iCalendar from '
+                                                 'http://i.cqut.edu.cn 把重庆理工大学教务网课程导出为 iCalendar 文件'
+                                                 '（可用于 iCal、Google Calendar 等）')
+    parser.add_argument('username', type=str, help='your student id of CQUT like 11501230123')
+    parser.add_argument('password', type=str, help='your student password like passwd12.!(# '
+                                                   'and if your password have special char, '
+                                                   'it should be \'pa\`ss\'')
+    parser.add_argument('-d', '--with-debug', action='store_true', help='open the debug mode')
+    return parser.parse_args()
 
 
 if __name__ == '__main__':
+    args = parse_args()
     cg = CqutIcsExporter()
-    cg.get_username_password()
-    cg.user_login()
+    # cg.user_login()
     # cg.get_date_start()
-    cg.get_schedule()
-    cg.to_ics()
+    # cg.get_schedule()
+    # cg.to_ics()
