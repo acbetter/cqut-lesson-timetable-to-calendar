@@ -5,7 +5,8 @@
 .DS_Store
 
 # Output
-tests/output
+output.ics
+tests/output/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
