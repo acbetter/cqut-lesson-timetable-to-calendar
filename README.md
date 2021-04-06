@@ -15,14 +15,16 @@ brew install python3
 Second, you need install beautifulsoup4 and icalendar by pip (pip3).
 
 ```shell
-pip install beautifulsoup4
-pip install icalendar
+pip/pip3 install beautifulsoup4
+pip/pip3 install icalendar
 ```
 
 ## USAGE
 
+使用前需修改 `cqut.py` 第 192 行的日期，需要改成开学第一周星期一的日期。
+
 ```shell
-cqut.py -u <username> -p <password>
+python3 cqut.py -u <username> -p <password>
 ```
 
 ## DESCRIPTION
